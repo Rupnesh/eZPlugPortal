@@ -1,0 +1,374 @@
+<div class="animated fadeIn">
+  <div class="card card-default">
+
+    <div class="card-header">
+      <i class="fa fa-arrow-left" [routerLink]="['/management/site']"></i>Site Information
+    </div>
+    <div class="card-body">
+
+      <!-- <ag-grid-angular *ngIf="stationData" style="width: 100%;" class="ag-theme-balham" [rowData]="stationData"
+                  [columnDefs]="columnDefs" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+                  (rowClicked)="onRowClicked($event)">
+                </ag-grid-angular> -->
+
+      <!-- <div class="row">
+        <div class="col-12 col-md-6">
+          <h5>{{siteDataNav?.siteName}}</h5>
+        </div>
+        <div class="col-12 col-md-6">
+          <span>{{siteDataNav?.address}}</span>
+        </div>
+      </div> -->
+      <!-- <div class="row">
+        <div class="col-12 col-md-6">
+          <span>Status :&nbsp;{{siteDataNav?.isActive ? 'Active': 'Inactive'}}</span>
+        </div>
+        <div class="col-12 col-md-6">
+          <span>Error :&nbsp;{{siteDataNav?.hasError ? 'Yes': 'No'}}</span>
+        </div>
+      </div> -->
+
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <h5>{{siteDataNav?.siteName}}</h5>
+          <p><span>{{siteDataNav?.address}}</span></p>
+          <p><span>Status :&nbsp;{{siteDataNav?.isActive ? 'Active': 'Inactive'}}</span></p>
+          <p><span>Error :&nbsp;{{siteDataNav?.hasError ? 'Yes': 'No'}}</span></p>
+        </div>
+        <div class="col-12 col-md-6 siteImg" style="text-align: right">
+          <img *ngIf="sitePhoto" (click)="imageZoom()" [src]="sitePhoto" style="height:120px; width:120px;"/>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12">
+
+          <ag-grid-angular *ngIf="userSavedRoles?.indexOf('Site User') > -1" class="ag-theme-balham" [rowData]="stationData"
+            [columnDefs]="columnDefsSiteUser" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+            (rowClicked)="onRowClicked($event)">
+          </ag-grid-angular>
+
+          <tabset *ngIf="userSavedRoles?.indexOf('Site User')">
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Stations</ng-template>
+
+              <div *ngIf="!loading"> 
+                <div style="margin-bottom: 16px;">
+                  Search : <input type="text" id="filter-text-box" placeholder="Filter..."
+                    (keyup)="onFilterTextBoxChanged()" />
+                </div>
+
+                <ag-grid-angular class="ag-theme-balham" [rowData]="stationData"
+                  [columnDefs]="columnDefs" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+                  (rowClicked)="onRowClicked($event)">
+                </ag-grid-angular>
+
+                
+
+              </div>
+
+              <div class="d-flex justify-content-center" *ngIf="loading">
+                <div class="spinner-border m-5 text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </tab>
+
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Site User Mapping</ng-template>
+              <div class="row">
+                <div class="col-12">
+
+
+                  <form class="form-horizontal mt-3 mb-5" [formGroup]="siteUserMappingForm">
+
+                    <div class="form-group row">
+
+
+
+                      <div class="col-md-8">
+                        <ng-multiselect-dropdown #multiSelect [placeholder]="'Select Users'" [data]="userData"
+                          formControlName="users" [settings]="settings" [disabled]="false">
+                        </ng-multiselect-dropdown>
+                      </div>
+
+                      <!-- <div class="col-md-5">
+                        <select id="hf-role" name="hf-role" class="form-control" formControlName="role"
+                          [ngClass]="{ 'is-invalid': submittedsiteUserMapping && siteUserMap.role.errors }">
+                          <option value="0">Please select User Role</option>
+                          <option>Distributor</option>
+                          <option>Owner</option>
+                        </select>
+
+                        <div *ngIf="submittedsiteUserMapping && siteUserMap.role.errors" class="invalid-feedback">
+                          <div *ngIf="siteUserMap.role.errors.required">Role is required</div>
+                        </div>
+                      </div> --> 
+
+                      <!-- <div class="col-md-5">
+                        <select id="hf-siteid" name="hf-siteid" class="form-control" formControlName="siteID"
+                          [ngClass]="{ 'is-invalid': submittedsiteUserMapping && sum.siteID.errors }">
+                          <option value="0">Please select Site ID</option>
+                          <option *ngFor="let site of siteData" [value]="site.siteID">{{site.siteName}}</option>
+                        </select>
+
+                        <div *ngIf="submittedsiteUserMapping && sum.siteID.errors" class="invalid-feedback">
+                          <div *ngIf="sum.siteID.errors.required">Site ID is required</div>
+                        </div>
+                      </div> -->
+
+                      <div class="col-md-4">
+                        <button type="button" (click)="assignUsersToSite()" class="btn btn-primary btn-block">
+                          <span *ngIf="loadingAssignUserToSite" class="spinner-border spinner-border-sm mr-1"></span>
+                          Assign</button>
+                      </div>
+
+                    </div>
+
+                  </form>
+
+                  <!-- <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteUserMapData"
+                    [columnDefs]="columnDefsSIteUserMap" [gridOptions]="gridOptions">
+                  </ag-grid-angular> -->
+
+                </div>
+              </div>
+            </tab>
+            <tab *ngIf="userSavedRoles?.indexOf('Site Owner')">
+              <ng-template tabHeading><i class="icon-user"></i> Site Station Mapping</ng-template>
+
+              <div class="row">
+                <div class="col-12">
+
+
+                  <form class="form-horizontal mt-3 mb-5" [formGroup]="siteStationMappingForm">
+
+                    <div class="form-group row">
+
+                      <!-- <div class="col-md-5">
+                        <select id="hf-siteId" name="hf-siteId" class="form-control" formControlName="siteId"
+                          [ngClass]="{ 'is-invalid': submittedsiteUserMapping && siteStationMap.siteId.errors }">
+                          <option value="0">Please select Site ID</option>
+                          <option *ngFor="let site of siteData" [value]="site.siteId">{{site.siteName}}</option>
+                        </select>
+
+                        <div *ngIf="submittedsiteUserMapping && siteStationMap.siteId.errors" class="invalid-feedback">
+                          <div *ngIf="siteStationMap.siteId.errors.required">Site ID is required</div>
+                        </div>
+                      </div> -->
+
+                      <div class="col-md-8">
+                        <ng-multiselect-dropdown #multiSelect [placeholder]="'Select Stations'"
+                          [data]="pendingStationData" formControlName="stations" [settings]="settingsStations"
+                          [disabled]="false">
+                        </ng-multiselect-dropdown>
+                      </div>
+
+                      <div class="col-md-4">
+                        <button type="button" (click)="assignStationsToSite()" class="btn btn-primary btn-block">
+                          <span *ngIf="loadingAssignStationsToSite"
+                            class="spinner-border spinner-border-sm mr-1"></span>
+                          Assign</button>
+                      </div>
+
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
+
+            </tab>
+
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Pricing</ng-template>
+
+              <form class="form-horizontal mt-3 mb-5" [formGroup]="siteStationPricingForm">
+
+                <div class="form-group row">
+
+                  <div class="col-md-5">
+                    <select id="hf-pricingTypeId" name="hf-pricingTypeId" class="form-control"
+                      formControlName="pricingTypeId"
+                      [ngClass]="{ 'is-invalid': submitted && sitePricingVal.pricingTypeId.errors }">
+                      <option value="0">Please select Pricing type</option>
+                      <option *ngFor="let pricing of pricingTypesData" [value]="pricing.pricingTypeId">
+                        {{pricing.displayName}}</option>
+                    </select>
+
+                    <div *ngIf="submittedsiteStationPricing && sitePricingVal.pricingTypeId.errors"
+                      class="invalid-feedback">
+                      <div *ngIf="sitePricingVal.pricingTypeId.errors.required">Pricing Type is required</div>
+                    </div>
+                  </div> 
+
+
+                  <div class="col-md-5">
+                    <input type="text" id="hf-amount" name="hf-amount" formControlName="amount"
+                      placeholder="Enter Amount" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && sitePricingVal.amount.errors }" />
+                    <div *ngIf = "submittedsiteStationPricing && sitePricingVal.amount.errors" class="invalid-feedback">
+                      <div *ngIf="sitePricingVal.amount.errors.required">Amount is required</div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-2">
+                    <button type="button" (click)="addPricingRule()" class="btn btn-primary btn-block">
+                      <span *ngIf="loadingAddPricingRule" class="spinner-border spinner-border-sm mr-1"></span>
+                      Submit</button>
+                  </div>
+
+
+
+                </div>
+              </form>
+
+              <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteStationPricingRuleData"
+                [columnDefs]="columnDefsPricing" [gridOptions]="gridOptions" >
+              </ag-grid-angular>
+
+
+            </tab>
+
+            
+          </tabset>
+
+        </div>
+
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
+
+<div bsModal #imageModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+aria-hidden="true">
+  
+
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body" >
+        
+        <div class="col-md-12" style="padding: 24px;">
+          <button type="button" style="position: absolute; top: 0; right: 0; z-index: 9999;" class="close" (click)="imageModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          
+
+          <img  [src] = "sitePhoto" class="modal-content" id="img01">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<div bsModal #pricingModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+
+
+      <div class="modal-body">
+
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>Station Pricing</strong>
+
+              <button type="button" class="close" (click)="pricingModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body">
+
+
+              <form class="form-horizontal" [formGroup]="pricingModalForm">
+
+                <div class="form-group row">
+
+                <div class="col-md-4">
+                  <select id="hf-pricingTypeId" name="hf-pricingTypeId" class="form-control"
+                    formControlName="pricingTypeId"
+                    [ngClass]="{ 'is-invalid': submittedsitePricingModal && sitePricingModalVal.pricingTypeId.errors }">
+                    <option value="0">Please select Pricing type</option>
+                    <option *ngFor="let pricing of pricingTypesData" [value]="pricing.pricingTypeId">
+                      {{pricing.displayName}}</option>
+                  </select>
+
+                  <div *ngIf="submittedsitePricingModal && sitePricingModalVal.pricingTypeId.errors"
+                    class="invalid-feedback">
+                    <div *ngIf="sitePricingModalVal.pricingTypeId.errors.required">Pricing Type is required</div>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <input type="text" id="hf-amount" name="hf-amount" formControlName="amount"
+                    placeholder="Enter Amount" class="form-control"
+                    [ngClass]="{ 'is-invalid': submittedsitePricingModal && sitePricingModalVal.amount.errors }" />
+                  <div *ngIf="submittedsitePricingModal && sitePricingModalVal.amount.errors" class="invalid-feedback">
+                    <div *ngIf="sitePricingModalVal.amount.errors.required">Amount is required</div>
+                  </div>
+                </div>
+
+                <div class="col-md-4" >
+                  <button type="button" (click)="addPricingRuleModal()" class="btn btn-primary btn-block">
+                    <span *ngIf="loadingAddPricingRule" class="spinner-border spinner-border-sm mr-1"></span>
+                    Submit</button>
+                </div>
+
+              </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #qrCodeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+
+
+      <div class="modal-body">
+
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>QR Code</strong>
+
+              <button type="button" class="close" (click)="qrCodeModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body" style="text-align: center;" >
+              <qrcode id="qrImage" *ngIf="stationQRCodeData" [qrdata]="stationQRCodeData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+              
+              <button type="button" class="btn btn-primary" (click)="saveAsImage()">Download QR Code Image</button>
+              
+              <!-- <a [href]="fileUrl" download="Qrcode.txt">Download Code Text</a> -->
+
+              <!-- <a href="https://api.whatsapp.com/send?text=Hi, this is a test" target="_blank">Send by WhatsApp</a>
+              <button type="button" class="btn btn-primary" (click)="share()">Share</button> -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

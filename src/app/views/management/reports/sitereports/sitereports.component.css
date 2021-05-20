@@ -1,0 +1,50 @@
+
+.table td {
+    vertical-align: middle;
+}
+
+td > label {
+    margin-top: 0.5rem;
+}
+
+.neglectmargin {
+    margin-right: 0;
+    margin-left: 0;
+}
+.divcenter {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+.tdlable {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 50px;float: left;
+width: 50px;float: left;
+}
+
+h6 {
+    font-weight: 400;
+}
+
+.carousel-item {
+    display: flex !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1.2s ease-in-out, visibility 1.2s;
+    z-index: -1;
+}
+
+.carousel-item.active{
+    opacity: 1;
+    visibility: visible;
+    z-index: 10;
+}
+
+
+
+  
+
+
+
+

@@ -1,0 +1,233 @@
+<!-- <div class="animated fadeIn">
+  <div class="card card-default">
+    <div class="card-header">
+      
+      <span style="justify-content: center;align-items: center; display: flex;">
+        <div>
+          <i class="fa fa-arrow-left" [routerLink]="['/management/reports']"></i> Site Reports</div>
+        <div class="card-header-actions" style="margin-left: auto;">
+          <button type="button" class="btn btn-ghost-success">&nbsp;</button>
+        </div>
+      </span>
+    </div>
+  </div>
+</div> -->
+
+
+
+<div class="animated fadeIn">
+  <div class="card card-default">
+    <div class="card-header">
+      
+      <span style="justify-content: center;align-items: center; display: flex;">
+        <div>
+          <i class="fa fa-arrow-left" [routerLink]="['/management/reports']"></i> Site Reports</div>
+        <div class="card-header-actions" style="margin-left: auto;">
+          <button type="button" class="btn btn-ghost-success" (click)="onBtExport()">
+            <i class="icon-share-alt"></i>
+          </button>
+          <!-- <button type="button" class="btn btn-ghost-success">&nbsp;</button> -->
+        </div>
+      </span>
+    </div>
+    <div class="card-body" >
+
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <h5>{{siteDataNav?.siteName}}</h5>
+          <h6><span>{{siteDataNav?.address}}</span></h6>
+          <h6><span>Status :&nbsp;{{siteDataNav?.isActive ? 'Active': 'Inactive'}}</span></h6>
+          <h6><span>Error :&nbsp;{{siteDataNav?.hasError ? 'Yes': 'No'}}</span></h6>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+
+          <ngb-carousel *ngIf="unitsLoaded" #ngcarousel [showNavigationArrows]="false" >
+            
+            <ng-template ngbSlide id="one">
+
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <i style="font-size: 24px;line-height: 2;" class="icon-speedometer"> </i>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(unitsConsumedData?.unitsConsumedToday)}}</div>
+                    <div>{{todaysDate | date:'dd, MMM' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template ngbSlide id="two">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <i style="font-size: 24px;line-height: 2;" class="icon-speedometer"> </i>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(unitsConsumedData?.unitsConsumedThisMonth)}}</div>
+                    <div>{{todaysDate | date:'MMM, yyyy' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template ngbSlide id="three">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <i style="font-size: 24px;line-height: 2;" class="icon-speedometer"> </i>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(unitsConsumedData?.unitsConsumedThisYear)}}</div>
+                    <div>{{todaysDate | date:'yyyy' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            
+            <ng-template ngbSlide id="four">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <i style="font-size: 24px;line-height: 2;" class="icon-speedometer"> </i>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(unitsConsumedData?.totalUnitsConsumedTillNow)}}</div>
+                    <div>Overall</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+
+          </ngb-carousel>
+          
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+
+          <ngb-carousel *ngIf="revenueLoaded" #ngcarouselRevenue [showNavigationArrows]="false" >
+            
+            <ng-template ngbSlide id="one">
+
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <span style="font-weight: bold; font-size: 36px;">₹ </span>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(revenueGeneratedData?.revenueGeneratedToday)}}</div>
+                    <div>{{todaysDate | date:'dd, MMM' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template ngbSlide id="two">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <span style="font-weight: bold; font-size: 36px;">₹ </span>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(revenueGeneratedData?.revenueGeneratedThisMonth)}}</div>
+                    <div>{{todaysDate | date:'MMM, yyyy' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template ngbSlide id="three">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <span style="font-weight: bold; font-size: 36px;">₹ </span>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(revenueGeneratedData?.revenueGeneratedThisYear)}}</div>
+                    <div>{{todaysDate | date:'yyyy' }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            
+            <ng-template ngbSlide id="four">
+              <div class="card text-white bg-info">
+                <div class="card-body">
+                  <div style="float: left;">
+                    <span style="font-weight: bold; font-size: 36px;">₹ </span>
+                  </div>
+                  <div style="float: left; margin-left: 16px;">
+                    <div class="text-value">{{returnNumberPrice(revenueGeneratedData?.revenueGeneratedTillNow)}}</div>
+                    <div>Overall</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+
+          </ngb-carousel>
+          
+        </div>
+
+      </div>
+
+      <div class="row"  style="margin-top: 24px;">
+        <div class="col-12 col-md-4 mb-3">
+          <input type="text" class="form-control" id="filter-text-box" placeholder="Search..." (keyup)="onFilterTextBoxChanged()" />
+        </div>
+        <div class="col-12 col-md-4 mb-3">
+          <select placeholder="Station Filter" class="form-control" (change)="searchByStation($event)">
+            <option value="0" disabled>Please select station</option>
+            <option *ngFor="let station of stationData" [value]="station.stationId">{{station.stationName}}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 mb-3">
+          <div class="input-group input-wrapper">
+            <input type="text" [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}" [closeOnAutoApply]="true" [autoApply]="true" ngxDaterangepickerMd [(ngModel)]="selected" (datesUpdated)="datesUpdated($event)" class="form-control"/>
+            <div class="input-group-append"> <span class="input-group-text"><i class="icon-calendar"></i></span> </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12">
+
+          <div *ngIf="!loading">
+            <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteData"
+              [columnDefs]="columnDefs" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+              (rowClicked)="onRowClicked($event)" [rowClassRules]="rowClassRules" >
+            </ag-grid-angular>
+          </div>
+
+          <div class="d-flex justify-content-center" *ngIf="loading">
+            <div class="spinner-border m-5 text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+ <!-- <div class="row">
+    <div class="col-12 col-md-6">
+      <h5>{{siteDataNav?.siteName}}</h5>
+    </div>
+    <div class="col-12 col-md-6">
+      <span>{{siteDataNav?.address}}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <span>Status :&nbsp;{{siteDataNav?.isActive ? 'Active': 'Inactive'}}</span>
+    </div>
+    <div class="col-12 col-md-6">
+      <span>Error :&nbsp;{{siteDataNav?.hasError ? 'Yes': 'No'}}</span>
+    </div>
+  </div> -->

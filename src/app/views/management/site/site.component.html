@@ -1,0 +1,620 @@
+<div class="animated fadeIn">
+  <div class="card card-default">
+    <div class="card-header">
+      <span style="justify-content: center;align-items: center; display: flex;">
+        <div>
+          <i class="fa fa-picture-o"></i> Site Management</div>
+        <div class="card-header-actions" style="margin-left: auto;">
+          <button *ngIf="userSavedRoles?.indexOf('Admin') > -1 || userSavedRoles?.indexOf('Super Admin') > -1 || userSavedRoles?.indexOf('Distributor') > -1" type="button" class="btn btn-ghost-success" (click)="largeModal.show()"><i
+              class="fa fa-plus"></i>&nbsp;Add New Site</button>
+        </div>
+      </span>
+
+    </div>
+    <div class="card-body">
+
+      <div class="row">
+        <div class="col-12">
+          <!-- <tabset>
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Sites</ng-template> -->
+
+              <div *ngIf="!loading">
+                <div style="margin-bottom: 16px;">
+                  Search : <input type="text" id="filter-text-box" placeholder="Filter..."
+                    (keyup)="onFilterTextBoxChanged()" />
+                </div>
+
+                <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteData"
+                  [columnDefs]="columnDefs" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+                  (rowClicked)="onRowClicked($event)">
+                </ag-grid-angular>
+                
+              </div>
+
+              <div class="d-flex justify-content-center" *ngIf="loading">
+                <div class="spinner-border m-5 text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+
+            <!-- </tab>
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Site User Mapping</ng-template>
+              <div class="row">
+                <div class="col-12">
+
+
+                  <form class="form-horizontal mt-3 mb-5" [formGroup]="siteUserMappingForm">
+
+                    <div class="form-group row">
+                      <div class="col-md-5">
+
+                        <select id="hf-siteid" name="hf-siteid" class="form-control" formControlName="siteID"
+                          [ngClass]="{ 'is-invalid': submittedsiteUserMapping && sum.siteID.errors }">
+                          <option value="0">Please select Site ID</option>
+                          <option *ngFor="let site of siteData" [value]="site.siteID">{{site.siteName}}</option>
+                        </select>
+
+                        <div *ngIf="submittedsiteUserMapping && sum.siteID.errors" class="invalid-feedback">
+                          <div *ngIf="sum.siteID.errors.required">Site ID is required</div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-5">
+                        <ng-multiselect-dropdown #multiSelect [placeholder]="'Select User'" [data]="userData"
+                          formControlName="users" [settings]="settings" [disabled]="false">
+                        </ng-multiselect-dropdown>
+                      </div>
+
+
+
+                      <div class="col-md-2">
+                        <button type="button" (click)="assignUsersToSite()" class="btn btn-primary btn-block">
+                          <span *ngIf="loadingAssignUserToSite" class="spinner-border spinner-border-sm mr-1"></span>
+                          Assign</button>
+                      </div>
+
+                    </div>
+
+
+
+
+
+
+
+                  </form>
+
+                  <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteUserMapData"
+                    [columnDefs]="columnDefsSIteUserMap" [gridOptions]="gridOptions">
+                  </ag-grid-angular>
+
+                </div>
+              </div>
+            </tab>
+            <tab>
+              <ng-template tabHeading><i class="icon-user"></i> Site Station Mapping</ng-template>
+            </tab>
+          </tabset> -->
+        </div>
+      </div>
+
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<div bsModal #largeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>Add Site</strong>
+
+              <button type="button" class="close" (click)="largeModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body">
+
+              <!-- [ngClass]="{ 'is-invalid': submitted && f.siteName.errors }"   -->
+              <form class="form-horizontal" [formGroup]="siteForm">
+
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-siteName">Site Name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-siteName" name="hf-siteName" formControlName="siteName"
+                      placeholder="Enter Site Name" class="form-control" (focusout)="checkSiteExists()"
+                      [ngClass]="{ 'is-invalid': (submitted || detectChange) && f.siteName.errors }"
+                      />
+                    <div *ngIf="submitted && f.siteName.errors" class="invalid-feedback">
+                      <div *ngIf="f.siteName.errors.required">Site Name is required</div>
+                    </div>
+
+                    <div *ngIf="detectChange" class="invalid-feedback">
+											<div *ngIf="f.siteName.errors?.nameExists">
+												{{siteForm.get('siteName').errors.nameExists}}</div>
+										</div>
+
+										<div class="spinner-border spinner-border-sm text-primary float-left m-1" role="status"
+											*ngIf="nameExistsCheckLoading">
+											<span class="sr-only">Loading...</span>
+                    </div>
+                    
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-siteGeolocation">Geolocation</label>
+                  <div class="col-md-9">
+                    <div style="display: flex;">
+                      <input type="text" id="hf-siteGeolocation" name="hf-siteGeolocation" class="form-control"
+                        formControlName="siteGeolocation" placeholder="Enter Geolocation"
+                        [ngClass]="{ 'is-invalid': submitted && f.siteGeolocation.errors }">
+
+
+                      <button type="button" class="btn btn-success" style="margin-left: auto;"
+                        (click)="getGeolocation()">
+                        <i class="fa fa-map-marker"></i></button>
+                    </div>
+
+
+                    <div class="form-group">
+                      <label>Enter address</label>
+                      <input id="addressText" type="text" class="form-control" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
+                    </div>
+
+                    <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
+                      <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true"
+                        (dragEnd)="markerDragEnd($event)"></agm-marker>
+                    </agm-map>
+
+                    <div *ngIf="submitted && f.siteGeolocation.errors" class="invalid-feedback">
+                      <div *ngIf="f.siteGeolocation.errors.required">Geolocation is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-address">Site Address</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-address" name="hf-address" class="form-control" formControlName="address"
+                      placeholder="Enter Address" [ngClass]="{ 'is-invalid': submitted && f.address.errors }">
+                    <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
+                      <div *ngIf="f.address.errors.required">Site Address is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-contactNumber">Contact Number</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-contactNumber" name="hf-contactNumber" class="form-control"
+                      formControlName="contactNumber" placeholder="Enter Contact Number"
+                      [ngClass]="{ 'is-invalid': submitted && f.contactNumber.errors }">
+                    <div *ngIf="submitted && f.contactNumber.errors" class="invalid-feedback">
+                      <div *ngIf="f.contactNumber.errors.required">Contact Number is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-city">City</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-city" name="hf-city" class="form-control" formControlName="city"
+                      placeholder="Enter City" [ngClass]="{ 'is-invalid': submitted && f.city.errors }">
+                    <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                      <div *ngIf="f.city.errors.required">Site City is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-zipcode">Zipcode</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-zipcode" name="hf-zipcode" class="form-control"
+                      formControlName="zipcode" placeholder="Enter Zipcode"
+                      [ngClass]="{ 'is-invalid': submitted && f.zipcode.errors }">
+                    <div *ngIf="submitted && f.zipcode.errors" class="invalid-feedback">
+                      <div *ngIf="f.zipcode.errors.required">Site Zipcode is required</div>
+                    </div>
+                  </div>
+                </div> -->
+
+
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-state">State</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-state" name="hf-state" class="form-control"
+                      formControlName="state" placeholder="Enter Locality"
+                      [ngClass]="{ 'is-invalid': submitted && f.state.errors }">
+                    <div *ngIf="submitted && f.state.errors" class="invalid-feedback">
+                      <div *ngIf="f.state.errors.required">Site State is required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-country">Country</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-country" name="hf-country" class="form-control"
+                      formControlName="country" placeholder="Enter Locality"
+                      [ngClass]="{ 'is-invalid': submitted && f.country.errors }">
+                    <div *ngIf="submitted && f.country.errors" class="invalid-feedback">
+                      <div *ngIf="f.country.errors.required">Site Country is required</div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-photos">Site Image</label>
+                  <div class="col-md-9">
+                    <input type="file" #sitePhoto (change)="readUrl($event)"
+                      id="hf-photos" name="hf-photos">
+                    <img *ngIf="url" [src]="url" style="height: 60px;width: 60px;float: right;">
+                  </div>
+                </div>
+
+
+                <div class="form-group row">
+                  <label class="col-md-12 col-form-label" for="site-image">Site Attributes</label>
+                  <div class="col-md-12">
+
+                    <table class="table table-striped table-bordered table-sm row-border hover">
+                      <thead>
+                        <tr>
+                          <th>Attributes</th>
+                          <th>Values</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Open To Public</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success" style="margin-top: 0.5rem;">
+                              <input type="checkbox" formControlName="isPublic" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Lock Box</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success">
+                              <input type="checkbox" formControlName="isLockBoxAvailable" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Charger</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success">
+                              <input type="checkbox" formControlName="isChargerAvailable" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Timing</td>
+                          <td>
+
+                            <div class="row neglectmargin">
+                              <div class="col-md-6" class="divcenter">
+                                <input type="radio" value="247" formControlName="availability">
+                              </div>
+                              <div class="col-md-6" class="divcenter">
+                                <p class="tdlable">24/7</p>
+                              </div>
+                            </div>
+
+                            <div class="row neglectmargin">
+                              <div class="col-md-6" class="divcenter">
+                                <input type="radio" value="specific" formControlName="availability">
+                                <p class="tdlable" style="margin-left: 5px;">From :</p>
+                                <!-- <input type="time" #atpStartTime formControlName="stationStartTime" atp-time-picker -->
+                                <input type="time" formControlName="stationStartTime" (click)="openStartTime()"
+                                  style="z-index: 2000 !important;" />
+                              </div>
+                              <div class="col-md-6" class="divcenter">
+                                <p class="tdlable">To :</p>
+                                <!-- <input type="time" formControlName="stationEndTime" atp-time-picker -->
+                                <input type="time" formControlName="stationEndTime" (click)="openEndTime()"
+                                  style="z-index: 2000 !important;" />
+                              </div>
+                            </div>
+
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+                </div>
+
+
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" (click)="onSubmit()" class="btn btn-sm btn-primary">
+                <span *ngIf="loadingAdd" class="spinner-border spinner-border-sm mr-1"></span> Submit</button>
+              <button type="button" (click)="onReset()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+                Reset</button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="largeModal.hide()">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div bsModal #updateModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>Update Site</strong>
+
+              <button type="button" class="close" (click)="updateModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body">
+
+
+              <form class="form-horizontal" [formGroup]="siteUpdateForm">
+
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-siteName">Site Name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-siteName" name="hf-siteName" formControlName="siteName"
+                      placeholder="Enter Site Name" class="form-control"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.siteName.errors }" />
+                    <div *ngIf="submittedUpdate && u.siteName.errors" class="invalid-feedback">
+                      <div *ngIf="u.siteName.errors.required">Site Name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-siteGeolocation">Geolocation</label>
+                  <div class="col-md-9">
+                    <div style="display: flex;">
+                      <input type="text" id="hf-siteGeolocation" name="hf-siteGeolocation" class="form-control"
+                        formControlName="siteGeolocation" placeholder="Enter Geolocation"
+                        [ngClass]="{ 'is-invalid': submittedUpdate && u.siteGeolocation.errors }">
+
+
+                      <button type="button" class="btn btn-success" style="margin-left: auto;"
+                        (click)="getGeolocation()">
+                        <i class="fa fa-map-marker"></i></button>
+                    </div>
+
+                    <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
+                      <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true"
+                        (dragEnd)="markerDragEnd($event)"></agm-marker>
+                    </agm-map>
+
+                    <div *ngIf="submittedUpdate && u.siteGeolocation.errors" class="invalid-feedback">
+                      <div *ngIf="u.siteGeolocation.errors.required">Geolocation is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-address">Site Address</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-address" name="hf-address" class="form-control" formControlName="address"
+                      placeholder="Enter Address" [ngClass]="{ 'is-invalid': submittedUpdate && u.address.errors }">
+                    <div *ngIf="submittedUpdate && u.address.errors" class="invalid-feedback">
+                      <div *ngIf="u.address.errors.required">Site Address is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-contactNumber">Contact Number</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-contactNumber" name="hf-contactNumber" class="form-control"
+                      formControlName="contactNumber" placeholder="Enter Contact Number"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.contactNumber.errors }">
+                    <div *ngIf="submittedUpdate && u.contactNumber.errors" class="invalid-feedback">
+                      <div *ngIf="u.contactNumber.errors.required">Contact Number is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-city">City</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-city" name="hf-city" class="form-control" formControlName="city"
+                      placeholder="Enter City" [ngClass]="{ 'is-invalid': submittedUpdate && u.city.errors }">
+                    <div *ngIf="submittedUpdate && u.city.errors" class="invalid-feedback">
+                      <div *ngIf="u.city.errors.required">Site City is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-zipcode">Zipcode</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-zipcode" name="hf-zipcode" class="form-control"
+                      formControlName="zipcode" placeholder="Enter Zipcode"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.zipcode.errors }">
+                    <div *ngIf="submittedUpdate && u.zipcode.errors" class="invalid-feedback">
+                      <div *ngIf="u.zipcode.errors.required">Site Zipcode is required</div>
+                    </div>
+                  </div>
+                </div> -->
+
+
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-state">State</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-state" name="hf-state" class="form-control"
+                      formControlName="state" placeholder="Enter Locality"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.state.errors }">
+                    <div *ngIf="submittedUpdate && u.state.errors" class="invalid-feedback">
+                      <div *ngIf="u.state.errors.required">Site State is required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-country">Country</label>
+                  <div class="col-md-9">
+                    <input readonly type="text" id="hf-country" name="hf-country" class="form-control"
+                      formControlName="country" placeholder="Enter Locality"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.country.errors }">
+                    <div *ngIf="submittedUpdate && u.country.errors" class="invalid-feedback">
+                      <div *ngIf="u.country.errors.required">Site Country is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-photos">Site Image</label>
+                  <div class="col-md-9">
+                    <input type="file" #sitePhotoUpdate (change)="readUrl($event)"
+                      id="hf-photos" name="hf-photos">
+                    <img *ngIf="url" [src]="url" style="height: 60px;width: 60px;float: right;">
+                  </div>
+                </div>
+
+
+
+                <!-- <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-photos">Site Image</label>
+                  <div class="col-md-9">
+                    <input type="file" formControlName="photos" (change)="readUrl($event)" [(ngModel)]="siteImage"
+                      id="hf-photos" name="hf-photos">
+                    <img *ngIf="url" [src]="url" style="height: 60px;width: 60px;float: right;">
+                  </div>
+                </div> -->
+
+
+                <div class="form-group row">
+                  <label class="col-md-12 col-form-label" for="site-image">Site Attributes</label>
+                  <div class="col-md-12">
+
+                    <table class="table table-striped table-bordered table-sm row-border hover">
+                      <thead>
+                        <tr>
+                          <th>Attributes</th>
+                          <th>Values</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Open To Public</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success" style="margin-top: 0.5rem;">
+                              <input type="checkbox" formControlName="isPublic" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Lock Box</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success">
+                              <input type="checkbox" formControlName="isLockBoxAvailable" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Charger</td>
+                          <td style="display: flex;">
+                            <label class="switch switch-label switch-pill switch-success">
+                              <input type="checkbox" formControlName="isChargerAvailable" class="switch-input">
+                              <span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+                            </label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Timing</td>
+                          <td>
+
+                            <div class="row neglectmargin">
+                              <div class="col-md-6" class="divcenter">
+                                <p class="tdlable">From :</p>
+                                <input type="time" formControlName="stationStartTime" atp-time-picker
+                                  style="z-index: 2000 !important;" />
+                              </div>
+                              <div class="col-md-6" class="divcenter">
+                                <p class="tdlable">To :</p>
+                                <input type="time" formControlName="stationEndTime" atp-time-picker
+                                  style="z-index: 2000 !important;" />
+                              </div>
+                            </div>
+
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+                </div>
+
+
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" (click)="onSubmitUpdate()" class="btn btn-sm btn-primary">
+                <span *ngIf="loadingUpdate" class="spinner-border spinner-border-sm mr-1"></span> Update</button>
+              <!-- <i class="fa fa-dot-circle-o"></i> Update</button> -->
+              <button type="button" (click)="onResetUpdate()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+                Reset</button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="largeModal.hide()">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

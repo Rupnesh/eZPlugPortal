@@ -1,0 +1,465 @@
+<div class="animated fadeIn">
+	<div class="card card-default">
+		<div class="card-header">
+
+			<span style="justify-content: center;align-items: center; display: flex;">
+				<div>
+					<i class="fa fa-picture-o"></i> Station Management</div>
+				<div class="card-header-actions" style="margin-left: auto;">
+					<button *ngIf="userSavedRoles?.indexOf('Admin') > -1 || userSavedRoles?.indexOf('Super Admin') > -1" type="button" class="btn btn-ghost-success" (click)="largeModal.show()"><i
+							class="fa fa-plus"></i>&nbsp;Add New Station</button>
+				</div>
+			</span>
+
+		</div>
+		<div class="card-body"> 
+
+			<div *ngIf="!loading">
+				<div style="margin-bottom: 16px;">
+					Search : <input type="text" id="filter-text-box" placeholder="Filter..." (keyup)="onFilterTextBoxChanged()" />
+				</div>
+
+				<ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="stationData" [columnDefs]="columnDefs"
+					[gridOptions]="gridOptions" (gridReady)="onGridReady($event)" (rowClicked)="onRowClicked($event)">
+				</ag-grid-angular>
+			</div>
+
+			<div class="d-flex justify-content-center" *ngIf="loading">
+				<div class="spinner-border m-5 text-primary" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+<!-- <div class="animated fadeIn">
+	<div class="card card-default">
+		<div class="card-header">
+			<span style="justify-content: center;align-items: center; display: flex;">
+				<div>
+					<i class="icon-people"></i> Device Management</div>
+				<div class="card-header-actions" style="margin-left: auto;">
+					<button type="button" class="btn btn-ghost-success" (click)="largeModal.show()"><i
+							class="fa fa-plus"></i>&nbsp;Add New Device</button>
+				</div>
+			</span>
+		</div>
+		<div class="card-body">
+			<div>
+				<div style="margin-bottom: 16px;">
+					Search : <input type="text" id="filter-text-box" placeholder="Filter..." (keyup)="onFilterTextBoxChanged()" />
+				</div>
+				<ag-grid-angular style="width: 100%; height: 300px;" class="ag-theme-balham" [rowData]="data"
+					[columnDefs]="columnDefs" [gridOptions]="gridOptions">
+				</ag-grid-angular>
+			</div>
+		</div>
+	</div>
+</div> -->
+
+
+
+<div bsModal #largeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+
+
+
+			<div class="modal-body">
+
+
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<strong>Add Station</strong>
+
+							<!-- <button type="button" class="close" (click)="largeModal.hide()" aria-label="Close"> -->
+							<button type="button" class="close" (click)="closeModal()" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+
+						</div>
+						<div class="card-body">
+
+
+							<form class="form-horizontal" [formGroup]="deviceForm">
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-stationSerialNumber">Station Name</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-stationSerialNumber" name="hf-stationSerialNumber" class="form-control"
+											formControlName="stationSerialNumber" placeholder="Station Name" (focusout)="checkStationExists()"
+											[ngClass]="{ 'is-invalid': (submitted || detectChange) && f.stationSerialNumber.errors }">
+										<div *ngIf="submitted && f.stationSerialNumber.errors" class="invalid-feedback">
+											<div *ngIf="f.stationSerialNumber.errors.required">Station Name is required</div>
+										</div>
+										<div *ngIf="detectChange" class="invalid-feedback">
+											<div *ngIf="f.stationSerialNumber.errors?.nameExists">
+												{{deviceForm.get('stationSerialNumber').errors.nameExists}}</div>
+										</div>
+
+										<div class="spinner-border spinner-border-sm text-primary float-left m-1" role="status"
+											*ngIf="nameExistsCheckLoading">
+											<span class="sr-only">Loading...</span>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-stationTypeId">Station Type</label>
+									<div class="col-md-9">
+
+										<select id="hf-stationTypeId" name="hf-stationTypeId" class="form-control"
+											formControlName="stationTypeId" [ngClass]="{ 'is-invalid': submitted && f.stationTypeId.errors }">
+											<option value="0">Please select Station type</option>
+											<option *ngFor="let type of stationTypes" [value]="type.stationTypeId">{{type.stationTypeName}}
+											</option>
+										</select>
+
+										<div *ngIf="submitted && f.stationTypeId.errors" class="invalid-feedback">
+											<div *ngIf="f.stationTypeId.errors.required">Station type is required</div>
+										</div>
+									</div>
+								</div> 
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-distributorId">Assign Distributor</label>
+									<div class="col-md-9">
+
+										<select id="hf-distributorId" name="hf-distributorId" class="form-control"
+											formControlName="distributorId" [ngClass]="{ 'is-invalid': submitted && f.distributorId.errors }">
+											<option value="0">Please select Distributor</option>
+											<option *ngFor="let user of usersForRole" [value]="user.userId">{{user.firstName}}</option>
+										</select>
+
+										<div *ngIf="submitted && f.distributorId.errors" class="invalid-feedback">
+											<div *ngIf="f.distributorId.errors.required">Distributor is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-firmwareVersion">Firmware Version</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-firmwareVersion" name="hf-firmwareVersion"
+											formControlName="firmwareVersion" placeholder="Firmware version" class="form-control"
+											[ngClass]="{ 'is-invalid': submitted && f.firmwareVersion.errors }" />
+										<div *ngIf="submitted && f.firmwareVersion.errors" class="invalid-feedback">
+											<div *ngIf="f.firmwareVersion.errors.required">Firmware version is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-hardwareVersion">Hardware Version</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-hardwareVersion" name="hf-hardwareVersion"
+											formControlName="hardwareVersion" placeholder="Hardware version" class="form-control"
+											[ngClass]="{ 'is-invalid': submitted && f.hardwareVersion.errors }" />
+										<div *ngIf="submitted && f.hardwareVersion.errors" class="invalid-feedback">
+											<div *ngIf="f.hardwareVersion.errors.required">Hardware version is required</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- <div class="form-group row">
+									<label class="col-md-3 col-form-label" for="stationPhoto">Station Image</label>
+									<div class="col-md-9">
+										<input type="file" formControlName="stationPhoto" (change)="readUrl($event)"
+											[(ngModel)]="stationPhoto" id="stationPhoto" name="stationPhoto">
+										<img *ngIf="url" [src]="url" style="height: 60px;width: 60px;float: right;">
+									</div>
+								</div> -->
+
+								<div class="form-group row">
+									<label class="col-md-12 col-form-label" for="site-image">Site Attributes</label>
+									<div class="col-md-12">
+
+										<table class="table table-striped table-bordered table-sm row-border hover">
+											<thead>
+												<tr>
+													<th>Attributes</th>
+													<th>Values</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Lock</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success" style="margin-top: 0.5rem;">
+															<input type="checkbox" formControlName="isLockAvailable" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Sensor</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isSensorAvailable" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Multi port</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isMultiplePortSupported" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Test station</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isTestStation" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+
+									</div>
+								</div>
+
+
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" (click)="onSubmit()" class="btn btn-sm btn-primary"><i
+									class="fa fa-dot-circle-o"></i> <span *ngIf="loadingAdd"
+									class="spinner-border spinner-border-sm mr-1"></span> Submit</button>
+							<button type="button" (click)="onReset()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+								Reset</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+<div bsModal #updateModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+
+
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<strong>Update Station</strong>
+
+							<button type="button" class="close" (click)="updateModal.hide()" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+
+						</div>
+						<div class="card-body">
+
+
+							<form class="form-horizontal" [formGroup]="deviceUpdateForm">
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-stationSerialNumber">Serial Name</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-stationSerialNumber" name="hf-stationSerialNumber" class="form-control"
+											formControlName="stationSerialNumber" placeholder="Serial Name"
+											[ngClass]="{ 'is-invalid': submitted && u.stationSerialNumber.errors }">
+										<div *ngIf="submitted && u.stationSerialNumber.errors" class="invalid-feedback">
+											<div *ngIf="u.stationSerialNumber.errors.required">Serial Name is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-stationTypeId">Station Type</label>
+									<div class="col-md-9">
+
+										<select id="hf-stationTypeId" name="hf-stationTypeId" class="form-control"
+											formControlName="stationTypeId" [ngClass]="{ 'is-invalid': submitted && u.stationTypeId.errors }">
+											<option value="0">Please select Station type</option>
+											<option *ngFor="let type of stationTypes" [value]="type.stationTypeName">{{type.stationTypeName}}
+											</option>
+										</select>
+
+										<div *ngIf="submitted && u.stationTypeId.errors" class="invalid-feedback">
+											<div *ngIf="u.stationTypeId.errors.required">Station type is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-distributorId">Assign Distributor</label>
+									<div class="col-md-9">
+
+										<select id="hf-distributorId" name="hf-distributorId" class="form-control"
+											formControlName="distributorId" [ngClass]="{ 'is-invalid': submitted && u.distributorId.errors }">
+											<option value="0">Please select Distributor</option>
+											<option *ngFor="let user of usersForRole" [value]="user.userId">{{user.firstName}}</option>
+										</select>
+
+										<div *ngIf="submitted && u.distributorId.errors" class="invalid-feedback">
+											<div *ngIf="u.distributorId.errors.required">Distributor is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-firmwareVersion">Firmware Version</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-firmwareVersion" name="hf-firmwareVersion"
+											formControlName="firmwareVersion" placeholder="Firmware version" class="form-control"
+											[ngClass]="{ 'is-invalid': submitted && u.firmwareVersion.errors }" />
+										<div *ngIf="submitted && u.firmwareVersion.errors" class="invalid-feedback">
+											<div *ngIf="u.firmwareVersion.errors.required">Firmware version is required</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 col-form-label" for="hf-hardwareVersion">Hardware Version</label>
+									<div class="col-md-9">
+										<input type="text" id="hf-hardwareVersion" name="hf-hardwareVersion"
+											formControlName="hardwareVersion" placeholder="Hardware version" class="form-control"
+											[ngClass]="{ 'is-invalid': submitted && u.hardwareVersion.errors }" />
+										<div *ngIf="submitted && u.hardwareVersion.errors" class="invalid-feedback">
+											<div *ngIf="u.hardwareVersion.errors.required">Hardware version is required</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- <div class="form-group row">
+									<label class="col-md-3 col-form-label" for="stationPhoto">Station Image</label>
+									<div class="col-md-9">
+										<input type="file" formControlName="stationPhoto" (change)="readUrl($event)"
+											[(ngModel)]="stationPhoto" id="stationPhoto" name="stationPhoto">
+										<img *ngIf="url" [src]="url" style="height: 60px;width: 60px;float: right;">
+									</div>
+								</div> -->
+
+								<div class="form-group row">
+									<label class="col-md-12 col-form-label" for="site-image">Site Attributes</label>
+									<div class="col-md-12">
+
+										<table class="table table-striped table-bordered table-sm row-border hover">
+											<thead>
+												<tr>
+													<th>Attributes</th>
+													<th>Values</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Lock</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success" style="margin-top: 0.5rem;">
+															<input type="checkbox" formControlName="isLockAvailable" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Sensor</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isSensorAvailable" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Multi port</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isMultiplePortSupported" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>Test station</td>
+													<td style="display: flex;">
+														<label class="switch switch-label switch-pill switch-success">
+															<input type="checkbox" formControlName="isTestStation" class="switch-input">
+															<span class="switch-slider" data-checked="Yes" data-unchecked="No"></span>
+														</label>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+
+									</div>
+								</div>
+
+
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" (click)="onUpdate()" class="btn btn-sm btn-primary">
+								<span *ngIf="loadingUpdate" class="spinner-border spinner-border-sm mr-1"></span>
+								<i class="fa fa-dot-circle-o"></i> Submit</button>
+							<button type="button" (click)="onResetUpdate()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+								Reset</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+<div bsModal #qrCodeModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+
+
+      <div class="modal-body">
+
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>QR Code</strong>
+
+              <button type="button" class="close" (click)="qrCodeModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body" style="text-align: center;" id="qrImage">
+              <qrcode id="qrcode" *ngIf="stationQRCodeData" [qrdata]="stationQRCodeData" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+              
+              <button type="button" class="btn btn-primary" (click)="saveAsImage()">Download QR Code Image</button>
+							<button type="button" class="btn btn-primary" (click)="printComponent('qrImageDiv')">Print QR Code</button>
+
+              
+              <!-- <a [href]="fileUrl" download="Qrcode.txt">Download Code Text</a> -->
+
+              <!-- <a href="https://api.whatsapp.com/send?text=Hi, this is a test" target="_blank">Send by WhatsApp</a>
+              <button type="button" class="btn btn-primary" (click)="share()">Share</button> -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

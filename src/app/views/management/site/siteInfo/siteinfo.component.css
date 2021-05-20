@@ -1,0 +1,63 @@
+
+.table td {
+    vertical-align: middle;
+}
+
+td > label {
+    margin-top: 0.5rem;
+}
+
+.neglectmargin {
+    margin-right: 0;
+    margin-left: 0;
+}
+.divcenter {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+.tdlable {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 50px;float: left;
+width: 50px;float: left;
+}
+
+
+
+
+:host ::ng-deep .dropdown-down {
+    display: inline-block;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid #adadad !important;
+    border-left: 6px solid transparent !important;
+    border-right: 6px solid transparent !important;
+}
+
+:host ::ng-deep .dropdown-up {
+    display: inline-block;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid #adadad !important;
+    border-left: 6px solid transparent !important;
+    border-right: 6px solid transparent !important;
+}
+
+
+
+
+@media screen and (max-width: 767px) {
+    .siteImg {
+        text-align: center !important;
+    }
+}
+
+
+ 
+ 
+
+
+

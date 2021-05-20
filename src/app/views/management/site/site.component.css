@@ -1,0 +1,41 @@
+time-picker {
+    z-index: 2000 !important;
+}
+.multiselect-dropdown {
+
+    border:1px solid #e4e7ea !important;
+  }
+
+.table td {
+    vertical-align: middle;
+}
+
+td > label {
+    margin-top: 0.5rem;
+}
+
+.neglectmargin {
+    margin-right: 0;
+    margin-left: 0;
+}
+.divcenter {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+.tdlable {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 50px;float: left;
+width: 50px;float: left;
+}
+
+#map {
+    height: 200px;
+    width: 100%;
+   }
+
+   agm-map {
+    height: 200px;
+}
+

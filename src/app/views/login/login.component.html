@@ -1,0 +1,99 @@
+<div class="app-body">
+  <main class="main d-flex align-items-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-6 col-xl-6 mx-auto">
+          <div class="card-group">
+            <div class="card p-4">
+              <div class="card-body">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                  <h1>Login</h1>
+                  <p class="text-muted">Sign In to your account</p>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-envelope"></i></span>
+                    </div>
+
+                    <input type="text" placeholder="Email ID" formControlName="email" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                      <div *ngIf="f.email.errors.required">Username is required</div>
+                    </div>
+
+                  </div>
+                  <div class="input-group mb-4">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-lock"></i></span>
+                    </div>
+                    <input [type]="show ? 'text' : 'password'" placeholder="Password" formControlName="password" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                      <div *ngIf="f.password.errors.required">Password is required</div>
+                    </div>
+                    <div class="input-group-append" >
+                      <span class="input-group-text" (click)="textOpen()"><i
+                          [class]="show ? 'fa fa-eye-slash' : 'icon-eye'"></i></span>
+                    </div>
+                  </div>
+
+                  <!-- <div class="input-group mb-4">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-user"></i></span>
+                    </div>
+                    <select class="form-control" formControlName="userType" [ngClass]="{ 'is-invalid': submitted && f.userType.errors }">
+                      <option *ngFor="let user of userRoles" [ngValue]="user">{{ user }}</option>
+                    </select>
+                    <div *ngIf="submitted && f.userType.errors" class="invalid-feedback">
+                      <div *ngIf="f.userType.errors.required">Usertype is required</div>
+                    </div>
+                  </div> -->
+
+
+
+                  <div class="row mb-3">
+                    <div class="col-6 text-left">
+
+                      <div class="form-check">
+                        <input class="form-check-input" formControlName="rememberMe" type="checkbox" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">
+                          Remember me
+                        </label>
+                      </div>
+
+                    </div>
+                    <div class="col-6 text-right">
+                      <!-- <button type="button" class="btn btn-link px-0">Forgot password?</button> -->
+                      <a [routerLink]="['/reset_password_sent']">Forgot password?</a>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+
+                      <button [disabled]="loading" class="btn btn-primary btn-block">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Login
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12 text-center">
+                      <span>Not a member? </span><button type="button" style="vertical-align: initial;" class="btn btn-link mt-3" (click)="btnClick()">Register Now!</button>
+                    </div>
+                  </div>
+
+                  <!-- <div *ngIf="error" id="errormsg" class="alert alert-danger mt-3 mb-0">{{error.error.message }}</div> -->
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

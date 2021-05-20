@@ -1,0 +1,27 @@
+
+.table td {
+    vertical-align: middle;
+}
+
+td > label {
+    margin-top: 0.5rem;
+}
+
+.neglectmargin {
+    margin-right: 0;
+    margin-left: 0;
+}
+.divcenter {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+.tdlable {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 50px;float: left;
+width: 50px;float: left;
+}
+
+
+

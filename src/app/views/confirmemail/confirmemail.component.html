@@ -1,0 +1,43 @@
+<div class="app-body">
+	<main class="main d-flex align-items-center">
+		<div class="container">
+			<div class="row">
+				<div class="col-12 col-sm-12 col-md-10 col-lg-6 col-xl-6 mx-auto">
+					<div class="card-group">
+						<div class="card p-4">
+							<div class="card-body">
+
+								<h1 class="text-center">Confirm Your Email Address</h1>
+								<p class="text-center">Tap the button below to confirm your email address. </p>
+
+								<div class="row">
+									<div class="col-12 text-center mt-3">
+										<button class="btn btn-primary" (click)="onSubmit()">
+											<span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span> Confirm Your Email
+										</button>
+									</div>
+
+								</div>
+
+								<div class="row">
+									<div class="col-12 mt-3">
+										<p>Thanks,</p>
+										<p>Ztric India</p>
+									</div>
+								</div>
+
+								<div class="row" *ngIf="redirectMessage">
+									<div class="col-12 text-center mt-3">
+										<span class="text-primary"> {{redirectMessage}} <a [routerLink]="['/login']">Login!</a></span>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>

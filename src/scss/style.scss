@@ -1,0 +1,74 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+
+// If you want to add something do it here
+@import "custom";
+
+
+@import "~ag-grid-community/dist/styles/ag-grid.css";
+@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+
+
+// @import '~ngx-toastr/toastr';
+// @import '~ngx-toastr/toastr-bs4-alert';
+
+
+// if you'd like to use it without importing all of bootstrap it requires 
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~ngx-toastr/toastr-bs4-alert';
+
+.multiselect-dropdown {
+
+  border:1px solid #e4e7ea !important;
+}
+
+::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+  height: 8px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
+
+
+.carousel-item {
+  transition: opacity 1.2s ease-in-out, visibility 1.2s;
+}
+
+.carousel-indicators li {
+  width : 10px!important;
+  background-color: rgb(71, 68, 68);
+  // background-color: black;
+  height: 10px !important;
+  border-radius: 50% !important;
+  margin: 5px !important;
+}
+
+.carousel-indicators .active {
+  background-color: #187da0;
+  // background-color: rgb(19, 26, 46);
+}
+
+.paid {
+  background-color: lightgreen !important;
+  color: #fff;
+}
+
+.unpaid {
+  background-color: lightcoral !important;
+  color: #fff;
+}
+

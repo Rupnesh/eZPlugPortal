@@ -1,0 +1,323 @@
+<div class="animated fadeIn">
+  <div class="card card-default">
+    <div class="card-header">
+
+      <span style="justify-content: center;align-items: center; display: flex;">
+        <div>
+          <i class="icon-people"></i> User Management</div>
+        <div class="card-header-actions" style="margin-left: auto;">
+          <button type="button" class="btn btn-ghost-success" (click)="addModal.show()"><i
+              class="fa fa-plus"></i>&nbsp;Add New User</button>
+        </div>
+      </span>
+
+    </div>
+    <div class="card-body">
+
+      <div *ngIf="!loading">
+        <div style="margin-bottom: 16px;">
+          Search : <input type="text" id="filter-text-box" placeholder="Filter..." (keyup)="onFilterTextBoxChanged()" />
+        </div>
+
+        <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="userData"
+          [columnDefs]="columnDefs" [gridOptions]="gridOptions" (rowClicked)="onRowClicked($event)" (gridReady)="onGridReady($event)">
+          <!-- [columnDefs]="columnDefs" [gridOptions]="gridOptions" [frameworkComponents]="frameworkComponents" (rowClicked)="onRowClicked($event)"></ag-grid-angular>> -->
+        </ag-grid-angular>
+      </div>
+
+      <div class="d-flex justify-content-center" *ngIf="loading">
+        <div class="spinner-border m-5 text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<div bsModal #addModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+
+
+      <div class="modal-body">
+
+
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>Add User</strong>
+
+              <button type="button" class="close" (click)="cloasAddModal()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body">
+
+              <form class="form-horizontal" [formGroup]="userForm" >
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-firstName">First Name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-firstName" name="hf-firstName" formControlName="firstName" class="form-control" placeholder="First name"
+                      [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
+                    <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+                      <div *ngIf="f.firstName.errors.required">First name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-lastName">Last name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-lastName" name="hf-lastName" class="form-control"
+                      formControlName="lastName" placeholder="Last name"
+                      [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }">
+                    <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+                      <div *ngIf="f.lastName.errors.required">Last name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-email">Email</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-email" name="hf-email" formControlName="email"
+                      placeholder="Email" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                      <div *ngIf="f.email.errors.required">Email is required</div>
+                      <div *ngIf="f.email.errors.pattern">Please provide a valid email address</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-password">Password</label>
+                  <div class="col-md-9">
+                    <div class="input-group">
+                      <input [type]="show ? 'text' : 'password'" id="hf-password" name="hf-password" formControlName="password"
+                        placeholder="Password" class="form-control"
+                        [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                      
+                      <div class="input-group-append" >
+                        <span class="input-group-text" (click)="textOpen('p')"><i
+                            [class]="show ? 'fa fa-eye-slash' : 'icon-eye'"></i></span>
+                      </div>
+
+                      <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                        <div *ngIf="f.password.errors.required">Password is required</div>
+                        <div *ngIf="f.password.errors.pattern">Must contain Uppercase, Lowercase, digit and special character</div>
+                      </div>
+                      
+                    </div>
+                    
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-confirmPassword">Confirm Password</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-confirmPassword" name="hf-confirmPassword" formControlName="confirmPassword"
+                      placeholder="Confirm Password" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.confirmPassword.errors }" />
+                    <div *ngIf="submitted && f.confirmPassword.errors" class="invalid-feedback">
+                      <div *ngIf="f.confirmPassword.errors.required">Confirm Password is required</div>
+                      <div *ngIf="isPasswordSame === false">Password and Confrim Password must be same!!</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-companyName">Company Name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-companyName" name="hf-companyName" formControlName="companyName"
+                      placeholder="Comapny Name" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.companyName.errors }" />
+                    <div *ngIf="submitted && f.companyName.errors" class="invalid-feedback">
+                      <div *ngIf="f.companyName.errors.required">Company Name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-phoneNumber">Phone No</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-phoneNumber" name="hf-phoneNumber" class="form-control"
+                      formControlName="phoneNumber" placeholder="Phone"
+                      [ngClass]="{ 'is-invalid': submitted && f.phoneNumber.errors }">
+                    <div *ngIf="submitted && f.phoneNumber.errors" class="invalid-feedback">
+                      <div *ngIf="f.phoneNumber.errors.required">Phone No is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-roles">User Role</label>
+                  <div class="col-md-9">
+                    <ng-multiselect-dropdown [placeholder]="'Select Roles'" #addUserRolesSelect
+                      [data]="userRoles" [settings]="settingsRoles" formControlName="roles"
+                      [disabled]="false" >
+                    </ng-multiselect-dropdown>
+                    <span *ngIf="submitted && f?.roles?.errors?.required" style="font-size: 80%; color: #f86c6b;">
+                      Role is required
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-sites">Assign Site</label>
+                  <div class="col-md-9">
+                    <ng-multiselect-dropdown [placeholder]="'Select Site'"
+                      [data]="siteData" formControlName="sites" [settings]="settingsSite"
+                      [disabled]="false">
+                    </ng-multiselect-dropdown>
+                    <span *ngIf="submitted && f?.sites?.errors?.required" style="font-size: 80%; color: #f86c6b;">
+                      Site is required
+                    </span>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" (click)="onSubmit()" class="btn btn-sm btn-primary">
+                <!-- <i class="fa fa-dot-circle-o"></i>  -->
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>Submit</button>
+              <button type="button" (click)="onReset()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+                Reset</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div bsModal #updateModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <strong>Update User</strong>
+
+              <button type="button" class="close" (click)="updateModal.hide()" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+
+            </div>
+            <div class="card-body">
+
+
+              <form class="form-horizontal" [formGroup]="userUpdateForm">
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-firstName">First Name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-firstName" name="hf-firstName" formControlName="firstName" class="form-control" placeholder="First name"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.firstName.errors }" />
+                    <div *ngIf="submittedUpdate && u.firstName.errors" class="invalid-feedback">
+                      <div *ngIf="u.firstName.errors.required">First name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-lastName">Last name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-lastName" name="hf-lastName" class="form-control"
+                      formControlName="lastName" placeholder="Last name"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.lastName.errors }">
+                    <div *ngIf="submittedUpdate && u.lastName.errors" class="invalid-feedback">
+                      <div *ngIf="u.lastName.errors.required">Last name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-companyName">Company name</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-companyName" name="hf-companyName" class="form-control"
+                      formControlName="companyName" placeholder="Company name"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.companyName.errors }">
+                    <div *ngIf="submittedUpdate && u.companyName.errors" class="invalid-feedback">
+                      <div *ngIf="u.companyName.errors.required">Company name is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-email">Email</label>
+                  <div class="col-md-9">
+                    <input type="text" disabled id="hf-email" name="hf-email" formControlName="email" class="form-control"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.email.errors }" placeholder="Email" />
+                    <div *ngIf="submittedUpdate && u.email.errors" class="invalid-feedback">
+                      <div *ngIf="u.email.errors.required">Email is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-phoneNumber">Phone No</label>
+                  <div class="col-md-9">
+                    <input type="text" id="hf-phoneNumber" name="hf-phoneNumber" class="form-control"
+                      formControlName="phoneNumber" placeholder="Phone no"
+                      [ngClass]="{ 'is-invalid': submittedUpdate && u.phoneNumber.errors }">
+                    <div *ngIf="submittedUpdate && u.phoneNumber.errors" class="invalid-feedback">
+                      <div *ngIf="u.phoneNumber.errors.required">Phone No is required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-roles">User Role</label>
+                  <div class="col-md-9">
+                    <ng-multiselect-dropdown [(ngModel)]="updateSelectRole" [placeholder]="'Select roles'"
+                      [data]="userRoles" formControlName="roles" [settings]="settingsRoles"
+                      [disabled]="false" >
+                    </ng-multiselect-dropdown>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-md-3 col-form-label" for="hf-sites">Assign Site</label>
+                  <div class="col-md-9" >
+                    <ng-multiselect-dropdown *ngIf="siteAssignedToUserLoaded" [placeholder]="'Select site'"
+                      [data]="siteData" formControlName="sites" [settings]="settingsSite"
+                      [disabled]="false" >
+                    </ng-multiselect-dropdown>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+              <button [disabled]="loadingUpdate" (click)="onUpdate()" class="btn btn-sm btn-primary">
+                  <span *ngIf="loadingUpdate" class="spinner-border spinner-border-sm mr-1"></span> Submit</button>
+
+              <!-- <button type="button" (click)="onResetUpdate()" class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>
+                Reset</button> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

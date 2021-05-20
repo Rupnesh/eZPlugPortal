@@ -1,0 +1,204 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12 col-lg-12">
+      <div class="card text-white">
+        <div class="card-body">
+
+          <div class="col-md-12 mb-4">
+            <!-- Nav tabs -->
+            <tabset >
+              <tab >
+                <ng-template tabHeading><i class="icon-user"></i> Profile</ng-template>
+
+                <form [formGroup]="profileForm" *ngIf="!profileLoaded">
+
+                  <div class="row mt-5 ">
+                    <div class="col-md-8 col-lg-8 offset-md-2 offset-lg-2">
+
+                      <div class="card text-white">
+                        <div class="card-body">
+
+
+                          <div class="row">
+                            <div class="col-6">
+                              <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" placeholder="First name" formControlName="firstName"
+                                  class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
+                                <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+                                  <div *ngIf="f.firstName.errors.required">First name is required</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" placeholder="Last name" formControlName="lastName"
+                                  class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" />
+                                <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+                                  <div *ngIf="f.lastName.errors.required">Last name is required</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="icon-envelope"></i></span>
+                            </div>
+                            <input type="text" placeholder="Email ID" disabled formControlName="email" class="form-control"
+                              [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                              <div *ngIf="f.email.errors.required">Email is required</div>
+                              <div *ngIf="f.email.errors.pattern">Please provide a valid email address</div>
+                            </div>
+                          </div>
+
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="fa fa-phone fa-lg "></i></span>
+                            </div>
+
+                            <input class="form-control" placeholder="Phone number" type="text" appPhoneMask
+                              formControlName="phone" id="phone-number"
+                              [ngClass]="{ 'is-invalid': submitted && f.phone.errors }">
+
+                            <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
+                              <div *ngIf="f.phone.errors.required">Phone number is required</div>
+                              <div *ngIf="f.phone.errors.pattern">Please provide a valid phone</div>
+                            </div>
+
+                          </div>
+
+                          <div class="row">
+                            <div class="col-12 col-md-7 col-lg-5 text-right">
+                              <button [disabled]="loading" class="btn btn-block btn-primary" (click)="onSubmit()">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span> Update
+                                Profile</button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+
+                <div class="d-flex justify-content-center" *ngIf="profileLoaded">
+                  <div class="spinner-border m-5 text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+
+              </tab>
+              <tab >
+                <ng-template tabHeading><i class="icon-lock"></i> Password</ng-template>
+                
+                
+                <form [formGroup]="passwordForm" >
+
+                  <div class="row mt-5 ">
+                    <div class="col-md-8 col-lg-8 offset-md-2 offset-lg-2 ">
+
+                      <div class="card text-white">
+                        <div class="card-body">
+
+
+
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="icon-lock"></i></span>
+                            </div>
+
+                            <input [type]="showop ? 'text' : 'password'" placeholder="Current Password" formControlName="currentPassword"
+                              class="form-control" [ngClass]="{ 'is-invalid': submittedPassword && p.currentPassword.errors }" />
+                            <div *ngIf="submittedPassword && p.currentPassword.errors" class="invalid-feedback order-last">
+                              <div *ngIf="p.currentPassword.errors.required">Password is required</div>
+                              <div *ngIf="p.currentPassword.errors.pattern">Please enter valid password</div>
+                            </div>
+
+                            <div class="input-group-append" >
+                              <span class="input-group-text" (click)="textOpen('op')"><i
+                                  [class]="showop ? 'fa fa-eye-slash' : 'icon-eye'"></i></span>
+                            </div>
+
+                          </div>
+
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="icon-lock"></i></span>
+                            </div>
+
+                            <input [type]="shownp ? 'text' : 'password'" placeholder="New password" formControlName="newPassword"
+                              class="form-control" [ngClass]="{ 'is-invalid': submittedPassword && p.newPassword.errors }" />
+                            <div *ngIf="submittedPassword && p.newPassword.errors" class="invalid-feedback order-last">
+                              <div *ngIf="p.newPassword.errors.required">Password is required</div>
+                              <div *ngIf="p.newPassword.errors.pattern">Please enter valid password</div>
+                            </div>
+
+                            <div class="input-group-append" >
+                              <span class="input-group-text" (click)="textOpen('np')"><i
+                                  [class]="shownp ? 'fa fa-eye-slash' : 'icon-eye'"></i></span>
+                            </div>
+
+                          </div>
+
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text"><i class="icon-lock"></i></span>
+                            </div>
+                            <input [type]="showcp ? 'text' : 'password'" placeholder="Confirm new password"
+                              formControlName="confirmPassword" class="form-control"
+                              [ngClass]="{ 'is-invalid': submittedPassword && p.confirmPassword.errors }" />
+                            <div *ngIf="submittedPassword && p.confirmPassword.errors" class="invalid-feedback order-last">
+                              <div *ngIf="p.confirmPassword.errors.required">Confirm Password is required</div>
+                              <div *ngIf="isPasswordSame === false">Password and Confrim Password must be same!!</div>
+                            </div>
+                            <div class="input-group-append" >
+                              <span class="input-group-text" (click)="textOpen('cp')"><i
+                                  [class]="showcp ? 'fa fa-eye-slash' : 'icon-eye'"></i></span>
+                            </div>
+                          </div> 
+
+
+                          <div class="row">
+                            <div class="col-12 col-md-7 col-lg-5 text-right">
+                              <button [disabled]="loadingPassword" class="btn btn-block btn-primary" (click)="onPasswordSubmit()">
+                                <span *ngIf="loadingPassword" class="spinner-border spinner-border-sm mr-1"></span> Update
+                                Password</button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+
+              </tab>
+              <tab >
+                <ng-template tabHeading><i class="icon-settings"></i> Settings</ng-template>
+                4. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
+                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                officia deserunt mollit anim id est laborum.
+              </tab>
+            </tabset>
+          </div>
+          <!--/.col-->
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
