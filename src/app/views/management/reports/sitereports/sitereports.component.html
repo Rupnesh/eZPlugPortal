@@ -171,26 +171,33 @@
       </div>
 
       <div class="row"  style="margin-top: 24px;">
-        <div class="col-12 col-md-4 mb-3">
+        <div class="col-12 col-md-3 mb-3">
           <input type="text" class="form-control" id="filter-text-box" placeholder="Search..." (keyup)="onFilterTextBoxChanged()" />
         </div>
-        <div class="col-12 col-md-4 mb-3">
+        <div class="col-12 col-md-3 mb-3">
           <select placeholder="Station Filter" class="form-control" (change)="searchByStation($event)">
             <option value="0" disabled>Please select station</option>
             <option *ngFor="let station of stationData" [value]="station.stationId">{{station.stationName}}</option>
           </select>
         </div>
-        <div class="col-12 col-md-4 mb-3">
+        <div class="col-12 col-md-3 mb-3">
           <div class="input-group input-wrapper">
             <input type="text" [locale]="{applyLabel: 'ok', format: 'DD-MM-YYYY'}" [closeOnAutoApply]="true" [autoApply]="true" ngxDaterangepickerMd [(ngModel)]="selected" (datesUpdated)="datesUpdated($event)" class="form-control"/>
             <div class="input-group-append"> <span class="input-group-text"><i class="icon-calendar"></i></span> </div>
           </div>
 
         </div>
+
+        <div class="col-12 col-md-3 mb-3 text-center">
+          <label class="switch switch-label switch-pill switch-success">
+            <input type="checkbox" class="switch-input" [(ngModel)]="isRFID" (change)="checkRFID(isRFID)">
+            <span class="switch-slider" data-checked="RFID" data-unchecked="RFID"></span>
+          </label>
+        </div>
       </div>
 
       <div class="row mt-3">
-        <div class="col-12">
+        <div class="col-12" *ngIf="!isRFID">
 
           <div *ngIf="!loading">
             <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteData"
@@ -206,6 +213,27 @@
           </div>
 
         </div>
+
+        <div class="col-12" *ngIf="isRFID">
+
+          <div *ngIf="!loadingRFID">
+            <ag-grid-angular style="width: 100%;" class="ag-theme-balham" [rowData]="siteDataRFID"
+              [columnDefs]="columnDefsRFID" [gridOptions]="gridOptions" (gridReady)="onGridReady($event)"
+              (rowClicked)="onRowClicked($event)" [rowClassRules]="rowClassRules" >
+            </ag-grid-angular>
+
+
+          </div>
+
+          <div class="d-flex justify-content-center" *ngIf="loadingRFID">
+            <div class="spinner-border m-5 text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+
+        </div>
+
+
       </div>
     </div>
   </div>

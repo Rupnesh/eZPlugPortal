@@ -77,6 +77,10 @@ export const constString = {
 	//Management Profile
 	GET_USER_BY_ID: '/GetUserById',
 
+	//RFID
+	PATH_RFID: '/api/RFID',
+	GET_RFID_TRANSACTIONS_FOR_SITE: '/GetRFIDTransactionsForSite',
+
 	//Storage Keys
 	TOKEN: 'token',
 	USER_DATA: 'userData',

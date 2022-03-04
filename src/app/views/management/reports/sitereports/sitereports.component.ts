@@ -27,6 +27,7 @@ export class SiteReportsComponent {
   revenueGeneratedData:any;
 
   todaysDate:any = new Date()
+  isRFID:any;
 
   public gridOptions: any = {
     defaultColDef: {
@@ -43,6 +44,50 @@ export class SiteReportsComponent {
     autoSizeColumn: true
   };
 
+  columnDefsRFID = [
+    { headerName: 'Station', field: 'stationName' },
+    { headerName: 'Units Consumed', field: 'unitsConsumed', sortable: true, valueFormatter: this.precisionFormatter, filter: 'agNumberColumnFilter', },
+    { headerName: 'Transaction Amount', field: 'transactionAmount', sortable: true, valueFormatter: this.precisionFormatter, filter: 'agNumberColumnFilter', },
+    { headerName: 'User Email', field: 'userEmail' },
+    { headerName: 'User Contact', field: 'userPhone' },
+    { headerName: 'Transaction Start Time', field: 'transactionStartTime', sortable: true, valueFormatter: this.dateTimeFormatter,
+      filter: 'agDateColumnFilter',
+      filterParams: {
+        comparator: function(filterLocalDateAtMidnight, cellValue) {
+            var formatedCellValue = moment(cellValue).format('DD/MM/YYYY')
+            var dateAsString = formatedCellValue;
+            if (dateAsString == null) {
+                return 0;
+            }
+            var dateParts = dateAsString.split('/');
+            var day = Number(dateParts[0]);
+            var month = Number(dateParts[1]) - 1;
+            var year = Number(dateParts[2]);
+            var cellDate = new Date(year, month, day);
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            } else if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+            return 0;
+        }
+
+
+      }
+      
+    },
+    { headerName: 'Transaction End Time', field: 'transactionEndTime', sortable: true, valueFormatter: this.dateTimeFormatter },
+    { headerName: 'Payment Status', field: 'isFullyPaid', sortable: true, valueFormatter: this.statusFormatter, 
+      cellStyle: function(params) {
+        if (params.value === false) {
+          return { background: 'lightcoral', color: '#fff' };
+        }
+        else {
+          return { background: 'lightgreen', color: '#fff' };
+        }
+      }
+    }
+  ]
   
 
   columnDefs = [
@@ -51,6 +96,7 @@ export class SiteReportsComponent {
     { headerName: 'Units Consumed', field: 'unitsConsumed', sortable: true, valueFormatter: this.precisionFormatter, filter: 'agNumberColumnFilter', },
     { headerName: 'Transaction Amount', field: 'transactionAmount', sortable: true, valueFormatter: this.precisionFormatter, filter: 'agNumberColumnFilter', },
     { headerName: 'User Email', field: 'userEmail' },
+    { headerName: 'User Contact', field: 'userPhone' },
     { headerName: 'Transaction Start Time', field: 'transactionStartTime', sortable: true, valueFormatter: this.dateTimeFormatter,
       filter: 'agDateColumnFilter',
       filterParams: {
@@ -89,6 +135,8 @@ export class SiteReportsComponent {
       }
     },
   ];
+  loadingRFID: boolean;
+  siteDataRFID: any = [];
   constructor(private toastr: ToastrService, private managementService: ManagementService, 
     private router: Router, private route: ActivatedRoute) {
   }
@@ -123,10 +171,16 @@ export class SiteReportsComponent {
   datesUpdated(e) {
     var startDate = moment(e.startDate).format('MM-DD-YYYY');
     var endDate = moment(e.endDate).format('MM-DD-YYYY');
-    this.loadReports(startDate, endDate, null);
+    if(!this.isRFID)
+      this.loadReports(startDate, endDate, null);
+    else
+    this.loadReportsRFID(startDate, endDate, null);
   }
   searchByStation(e) {
-    this.loadReports(null, null, e.target.value);
+    if(!this.isRFID)
+      this.loadReports(null, null, e.target.value);
+    else
+      this.loadReportsRFID(null, null, e.target.value);
   }
   precisionFormatter(params) {
     if(params.value > 0)
@@ -177,6 +231,25 @@ export class SiteReportsComponent {
     }
 
     
+  }
+
+  loadReportsRFID(startDate, endDate, stationId) {
+    this.loadingRFID = true;
+    this.managementService.getRFIDTransactionsForSite(this.siteDataNav.siteID, startDate, endDate, stationId).subscribe(data => {
+      if (data.hasError === false) {
+        this.loadingRFID = false;
+        this.siteDataRFID = data.transactionSiteStationViewModels;
+      }
+    }, (error: any) => {
+      if(error.status === 401) {
+        this.toastr.error(error.name, 'Error');
+        this.loadingRFID = false;
+      }
+      else {
+        this.loadingRFID = false;
+        this.siteDataRFID = []
+      }
+    })
   }
 
   returnNumberPrice(number) {
@@ -234,6 +307,16 @@ export class SiteReportsComponent {
     // var params = getParams();
     // this.gridApi.exportDataAsCsv(params);
 
+  }
+
+  checkRFID(isRFID) {
+    console.log(isRFID)
+    if(isRFID) {
+      this.loadReportsRFID(null, null, null)
+    }
+    else {
+      this.loadReports(null,null,null)
+    }
   }
   
 }

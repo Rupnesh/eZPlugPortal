@@ -132,6 +132,18 @@ export class ManagementService {
 
 		// return this.http.get<any>(`${environment.testUrl}${constString.PATH_SITE}${constString.GET_ALL_TRANSACTION_FOR_SITE}?SiteId=${siteID}&FromDate=${startDate ? startDate : ''}&ToDate=${endDate ? endDate : ''}&StationId=${StationId ? StationId : ''}`, this.httpOptions);
   }
+
+	//RFID
+	public getRFIDTransactionsForSite(siteID, startDate, endDate, StationId): Observable<any> {
+		if(startDate === 'Invalid date' || endDate === 'Invalid date')
+			return this.http.get<any>(`${environment.testUrl}${constString.PATH_RFID}${constString.GET_RFID_TRANSACTIONS_FOR_SITE}?SiteId=${siteID}&FromDate=&ToDate=&StationId=${StationId ? StationId : ''}`, this.httpOptions);
+    else
+			return this.http.get<any>(`${environment.testUrl}${constString.PATH_RFID}${constString.GET_RFID_TRANSACTIONS_FOR_SITE}?SiteId=${siteID}&FromDate=${startDate ? startDate : ''}&ToDate=${endDate ? endDate : ''}&StationId=${StationId ? StationId : ''}`, this.httpOptions);
+
+		// return this.http.get<any>(`${environment.testUrl}${constString.PATH_RFID}${constString.GET_RFID_TRANSACTIONS_FOR_SITE}?SiteId=${siteID}`, this.httpOptions);
+	}
+
+
 	public deleteSiteStationPricingRules(data): Observable<any> {
     return this.http.put<any>(`${environment.testUrl}${constString.PATH_SITE}${constString.DELETE_SITE_STATION_PRICING_RULE}`, data, this.httpOptions);
   }
@@ -180,6 +192,7 @@ export class ManagementService {
 		return this.http.get<any>(`${environment.testUrl}${constString.PATH_USER}${constString.GET_SITE_ASSIGNED_TO_USER}/${userId}`, this.httpOptions);
 	}
 
+	
 	
 
 	async getObject(key) {

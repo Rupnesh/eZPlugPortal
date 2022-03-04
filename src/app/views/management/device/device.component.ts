@@ -126,6 +126,7 @@ export class DeviceComponent {
       isSensorAvailable: [true, ''],
       isTestStation: [true, ''],
       isMultiplePortSupported: [true, ''],
+      isRFIDStation: [false, ''],
     });
     this.deviceUpdateForm = this.formBuilder.group({
       siteId: [null],
@@ -140,6 +141,7 @@ export class DeviceComponent {
       isSensorAvailable: [true, ''],
       isTestStation: [true, ''],
       isMultiplePortSupported: [true, ''],
+      isRFIDStation: [false, ''],
     });
 
     this.loading = true;
